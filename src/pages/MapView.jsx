@@ -2,6 +2,7 @@ import { MapContainer, TileLayer, Marker } from 'react-leaflet'
 import 'leaflet/dist/leaflet.css'
 import L from 'leaflet'
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { Search } from 'lucide-react'
 import pantryData from '../data/pantries.js'
 
@@ -27,16 +28,18 @@ const pantryPinIcon = L.divIcon({
   iconSize: [40, 52],
   iconAnchor: [20, 52],
 })
+const FIGMA_PANTRY_POPUP_IMAGE =
+  'https://www.figma.com/api/mcp/asset/8d097491-0eaf-4296-825a-2192af7e9f7a'
 
 const FILTER_CHIPS = [
   'Open Now',
+  'Dairy',
+  'Meat',
+  'Spices',
   'Ready to Eat',
   'Produce',
   'Canned Food',
-  'Meat',
-  'Dairy',
-  'Grains',
-  'Snacks',
+  'Baked Goods',
 ]
 
 function minutesSinceMidnight(d) {
@@ -57,13 +60,27 @@ function isOpenNow(pantry, now = new Date()) {
 }
 
 function buildPantryMeta(data) {
+  const pantryAddressById = {
+    1: '170 E Quad, Davis, CA 95616',
+    2: 'South Hall, Davis, CA 95616',
+    3: 'Segundo Dining Commons, Davis, CA 95616',
+  }
+
   return data.pantries.map((p) => {
     const items = data.items.filter((i) => i.availableAt.includes(p.id))
     const categories = new Set(items.map((i) => i.category))
     const hasReadyToEat = items.some(
       (i) => i.tags?.includes('ready-to-eat') || i.readyToEat === true,
     )
-    return { ...p, items, categories, hasReadyToEat }
+    const previewImage = FIGMA_PANTRY_POPUP_IMAGE
+    return {
+      ...p,
+      items,
+      categories,
+      hasReadyToEat,
+      previewImage,
+      address: pantryAddressById[p.id] ?? 'Davis, CA 95616',
+    }
   })
 }
 
@@ -75,8 +92,9 @@ function pantryMatchesChip(meta, chip, now) {
   if (chip === 'Canned Food') return meta.categories.has('Canned Food')
   if (chip === 'Meat') return meta.categories.has('Meat')
   if (chip === 'Dairy') return meta.categories.has('Dairy')
-  if (chip === 'Grains') return meta.categories.has('Grains')
-  if (chip === 'Snacks') return meta.categories.has('Snacks')
+  if (chip === 'Spices')
+    return meta.categories.has('Spices') || meta.categories.has('Spices & Herbs')
+  if (chip === 'Baked Goods') return meta.categories.has('Baked Goods')
   return true
 }
 
@@ -115,8 +133,10 @@ function openDirections(lat, lng) {
 }
 
 export default function MapView() {
+  const [searchParams] = useSearchParams()
   const [search, setSearch] = useState('')
   const [selectedChips, setSelectedChips] = useState([])
+  const [itemSelectedChips, setItemSelectedChips] = useState(['Open Now'])
   const [sheetPantry, setSheetPantry] = useState(null)
   const [mapReady, setMapReady] = useState(false)
   const [now, setNow] = useState(() => new Date())
@@ -132,17 +152,49 @@ export default function MapView() {
   }, [])
 
   const metaList = useMemo(() => buildPantryMeta(pantryData), [])
+  const selectedItemId = Number(searchParams.get('item') || 0)
+  const selectedItem = useMemo(
+    () => pantryData.items.find((item) => item.id === selectedItemId) ?? null,
+    [selectedItemId],
+  )
+  const itemMode = Boolean(selectedItem)
+
+  const itemModeChips = useMemo(() => {
+    if (!selectedItem) return []
+    const chips = []
+    if (selectedItem.tags?.includes('ready-to-eat')) chips.push('Ready to Eat')
+    if (selectedItem.category === 'Dairy') chips.push('Dairy')
+    if (selectedItem.category === 'Produce' || selectedItem.category === 'Fruits') chips.push('Produce')
+    return chips.slice(0, 2)
+  }, [selectedItem])
+  const itemFilterChips = useMemo(() => ['Open Now', ...itemModeChips], [itemModeChips])
 
   const visiblePantries = useMemo(() => {
+    if (selectedItem?.availableAt?.length) {
+      const candidatePantries = metaList.filter((pantry) => selectedItem.availableAt.includes(pantry.id))
+      if (!itemSelectedChips.length) return candidatePantries
+      return candidatePantries.filter((pantry) =>
+        itemSelectedChips.every((chip) => pantryMatchesChip(pantry, chip, now)),
+      )
+    }
     const searched = filterMetaBySearch(metaList, search)
     return filterMetaByChips(searched, selectedChips, now)
-  }, [metaList, search, selectedChips, now])
+  }, [metaList, search, selectedChips, now, selectedItem, itemSelectedChips])
 
   const toggleChip = useCallback((label) => {
     setSelectedChips((prev) =>
       prev.includes(label) ? prev.filter((c) => c !== label) : [...prev, label],
     )
   }, [])
+  const toggleItemChip = useCallback((label) => {
+    setItemSelectedChips((prev) =>
+      prev.includes(label) ? prev.filter((c) => c !== label) : [...prev, label],
+    )
+  }, [])
+
+  useEffect(() => {
+    setItemSelectedChips(['Open Now'])
+  }, [selectedItemId])
 
   const closeSheet = useCallback(() => setSheetPantry(null), [])
 
@@ -157,7 +209,7 @@ export default function MapView() {
   }, [sheetPantry, closeSheet])
 
   return (
-    <div className="map-view-root relative mx-auto h-[calc(100dvh-5.25rem)] w-full max-w-[390px] bg-[#FAFAF7]">
+    <div className="map-view-root relative mx-auto h-[100dvh] min-h-[100dvh] w-full max-w-[390px] overflow-hidden bg-[#F7F7F7]">
       <div className="absolute inset-0 z-0">
         {mapReady ? (
           <MapContainer
@@ -190,82 +242,144 @@ export default function MapView() {
         )}
       </div>
 
-      <div className="pointer-events-none absolute inset-x-0 top-0 z-[1000] px-4 pt-3">
-        <div className="pointer-events-auto space-y-3">
-          <div className="relative">
-            <Search
-              className="pointer-events-none absolute left-4 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-[#9CA3AF]"
-              strokeWidth={2}
-            />
-            <input
-              type="search"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search items, pantries..."
-              className="h-12 w-full rounded-full border border-[#1C1917] bg-white pl-11 pr-4 text-[15px] text-[#1C1917] shadow-sm outline-none placeholder:text-[#9CA3AF] focus:ring-2 focus:ring-black/10"
-              aria-label="Search items and pantries"
-            />
-          </div>
-
-          <div className="rounded-2xl bg-white px-3.5 py-3 shadow-[0_2px_12px_rgba(0,0,0,0.06)]">
-            <p className="mb-2.5 text-xs font-semibold text-[#4B5563]">Filter By</p>
-            <div className="hide-scrollbar flex gap-2 overflow-x-auto pb-0.5 pt-0.5 [-webkit-overflow-scrolling:touch]">
-              {FILTER_CHIPS.map((label) => {
-                const on = selectedChips.includes(label)
-                return (
+      <div className="pointer-events-none absolute inset-x-0 top-0 z-[1000] px-[21px] pt-[56px]">
+        {itemMode ? (
+          <div className="pointer-events-auto rounded-2xl bg-[#FFF1E4] px-4 pb-3 pt-2">
+            <div className="flex gap-3">
+              <img
+                src={selectedItem.image}
+                alt={selectedItem.name}
+                className="mt-[6px] h-[90px] w-[120px] rounded-lg object-cover shadow-[0_4px_4px_rgba(0,0,0,0.25)]"
+              />
+              <div className="min-w-0 flex-1">
+                <h1 className="text-[20px] font-medium leading-none text-black">{selectedItem.name}</h1>
+                <p className="mt-[10px] text-[14px] leading-none text-black/50">Filter By</p>
+                <div className="mt-[3px]">
                   <button
-                    key={label}
                     type="button"
-                    onClick={() => toggleChip(label)}
-                    className={`shrink-0 rounded-full px-3.5 py-2 text-sm font-medium transition-colors ${
-                      on
-                        ? 'bg-[#4CAF50] text-white shadow-sm'
-                        : 'bg-[#EDEDED] text-[#1C1917]'
+                    onClick={() => toggleItemChip('Open Now')}
+                    className={`inline-flex rounded-lg px-2 py-0.5 text-[16px] font-medium leading-none text-black ${
+                      itemSelectedChips.includes('Open Now')
+                        ? 'bg-[rgba(145,200,139,0.5)]'
+                        : 'bg-[#EFE8DF]'
                     }`}
                   >
-                    {label}
+                    Open Now
                   </button>
-                )
-              })}
+                </div>
+                {itemFilterChips.length > 1 && (
+                  <>
+                    <p className="mt-[6px] text-[14px] leading-none text-black/50">Also has</p>
+                    <div className="mt-[3px] flex gap-2">
+                      {itemFilterChips.filter((chip) => chip !== 'Open Now').map((chip) => (
+                        <button
+                          key={chip}
+                          type="button"
+                          onClick={() => toggleItemChip(chip)}
+                          className={`inline-flex rounded-lg px-2 py-0.5 text-[16px] font-medium leading-none text-black ${
+                            itemSelectedChips.includes(chip)
+                              ? 'bg-[rgba(145,200,139,0.5)]'
+                              : 'bg-[#EFE8DF]'
+                          }`}
+                        >
+                          {chip}
+                        </button>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
             </div>
           </div>
-        </div>
+        ) : (
+          <div className="pointer-events-auto">
+            <div className="relative h-[39px]">
+              <Search
+                className="pointer-events-none absolute left-[14px] top-1/2 h-4 w-4 -translate-y-1/2 text-[#37281D]"
+                strokeWidth={2}
+              />
+              <input
+                type="search"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search items, pantries..."
+                className="h-full w-full rounded-[99px] border-[1.4px] border-[#1A1614] bg-[#FFF1E4] pl-10 pr-4 text-[14px] font-normal text-[#37281D] outline-none placeholder:text-[#37281D] focus:ring-2 focus:ring-black/10"
+                aria-label="Search items and pantries"
+              />
+            </div>
+
+            <div className="mt-[21px] rounded-lg bg-[#FFF1E4] p-2 shadow-[0_2px_10px_rgba(0,0,0,0.05)]">
+              <p className="mb-1.5 text-sm font-normal leading-none text-[#37281D]">Filter By</p>
+              <div className="hide-scrollbar flex flex-wrap gap-2 [-webkit-overflow-scrolling:touch]">
+                {FILTER_CHIPS.map((label) => {
+                  const on = selectedChips.includes(label)
+                  return (
+                    <button
+                      key={label}
+                      type="button"
+                      onClick={() => toggleChip(label)}
+                      className={`shrink-0 rounded-lg px-2 py-0.5 text-base font-medium leading-none transition-colors ${
+                        on
+                          ? 'bg-[rgba(145,200,139,0.5)] text-[#37281D]'
+                          : 'bg-[#EFE8DF] text-[#37281D]'
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {sheetPantry && (
         <>
           <button
             type="button"
-            className="fixed inset-0 z-[1100] bg-black/40"
+            className="absolute inset-0 z-[1100] bg-transparent"
             aria-label="Close pantry details"
             onClick={closeSheet}
           />
           <div
-            className="animate-sheet-up fixed bottom-0 left-1/2 z-[1110] w-full max-w-[390px] -translate-x-1/2 px-4 pb-6"
+            className="animate-sheet-up absolute inset-x-0 bottom-[calc(18px+4.75rem+env(safe-area-inset-bottom,0px))] z-[1110] mx-auto w-[345px]"
             role="dialog"
             aria-modal="true"
             aria-labelledby="map-pantry-sheet-title"
           >
-            <div className="rounded-2xl bg-white p-5 shadow-[0_8px_32px_rgba(0,0,0,0.12)]">
-              <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-black/10" />
-              <h2 id="map-pantry-sheet-title" className="text-lg font-semibold text-[#1C1917]">
-                {sheetPantry.name}
-              </h2>
-              <p className="mt-1 text-sm text-[#6B7280]">{sheetPantry.hours}</p>
-              <span
-                className={`mt-3 inline-flex rounded-full border px-3 py-1 text-xs font-semibold ${statusBadgeClass(sheetPantry.status)}`}
-              >
-                {statusLabel(sheetPantry.status)}
-              </span>
-              <button
-                type="button"
-                onClick={() =>
-                  openDirections(sheetPantry.coordinates.lat, sheetPantry.coordinates.lng)
-                }
-                className="mt-5 w-full rounded-xl bg-[#4CAF50] py-3.5 text-center text-sm font-semibold text-white shadow-sm transition active:scale-[0.98]"
-              >
-                Get directions
-              </button>
+            <div className="overflow-hidden rounded-2xl bg-[#FFF1E4] shadow-[0_8px_32px_rgba(0,0,0,0.15)]">
+              {sheetPantry.previewImage ? (
+                <img
+                  src={sheetPantry.previewImage}
+                  alt={`${sheetPantry.name} pantry`}
+                  className="h-[140px] w-full object-cover"
+                />
+              ) : (
+                <div className="h-[140px] w-full bg-[#D9D9D9]" />
+              )}
+
+              <div className="px-4 pb-4 pt-4">
+                <h2
+                  id="map-pantry-sheet-title"
+                  className="text-[34px] font-bold leading-[0.95] tracking-[-0.01em] text-black"
+                >
+                  {sheetPantry.name}
+                </h2>
+                <p className="mt-1.5 text-[20px] font-medium leading-[1.02] text-black">
+                  {sheetPantry.address}
+                </p>
+
+                <button
+                  type="button"
+                  onClick={() =>
+                    openDirections(sheetPantry.coordinates.lat, sheetPantry.coordinates.lng)
+                  }
+                  className="mt-5 h-[43px] w-full rounded-[30px] border-2 border-[#37281D] bg-[rgba(145,200,139,0.5)] text-[20px] font-medium text-[#2D2D2D] transition active:scale-[0.99]"
+                >
+                  Get directions
+                </button>
+              </div>
             </div>
           </div>
         </>

@@ -27,8 +27,14 @@
 }
 
 .map-hifi-leaflet .leaflet-bottom.leaflet-right {
-  bottom: 12px;
+  /* Sit above fixed bottom nav (~4.75rem) + safe area */
+  bottom: calc(12px + 4.75rem + env(safe-area-inset-bottom, 0px));
   right: 12px;
+}
+
+.map-hifi-leaflet .leaflet-control-attribution {
+  margin-right: 8px;
+  margin-bottom: calc(4.75rem + env(safe-area-inset-bottom, 0px));
 }
 
 .u-map-pin .leaflet-div-icon {
