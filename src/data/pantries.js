@@ -1,208 +1,403 @@
-/** Mock pantry inventory for the campus food app */
-
-export const CATEGORY_FILTERS = [
-  { id: 'produce', label: 'Produce' },
-  { id: 'bakedGoods', label: 'Baked Goods' },
-  { id: 'fruits', label: 'Fruits' },
-  { id: 'protein', label: 'Protein' },
-  { id: 'grains',  label: 'Grains' },
-  { id: 'snacks',  label: 'Snacks' },
-]
-
-/**
- * @typedef {'produce'|'bakedGoods'|'fruits'|'protein'|'grains'|'snacks'} PantryCategoryId
- * @typedef {'Halal'|'Vegan'|'GF'} DietaryTag
- * @typedef {'mu'|'scc'|'west'} PantrySiteId
- */
-
-/**
- * Approximate map pins aligned with real UC Davis programs/buildings.
- * Coordinates are for mapping demos only — always confirm hours and room on official sites.
- * @see https://aggiecompass.ucdavis.edu — Aggie Compass @ Memorial Union
- * @see https://thepantry.ucdavis.edu — The Pantry (ASUCD), MU
- */
-export const pantrySites = [
-  {
-    id: 'mu',
-    name: 'Aggie Compass — Memorial Union',
-    lat: 38.54135,
-    lng: -121.74941,
-    detail: 'Basic Needs Center, East Wing, Memorial Union',
-  },
-  {
-    id: 'scc',
-    name: 'Student Community Center',
-    lat: 38.5399,
-    lng: -121.7614,
-    detail: 'Satellite pantry — SCC front desk (check host hours)',
-  },
-  {
-    id: 'west',
-    name: 'West Village (approx.)',
-    lat: 38.5466,
-    lng: -121.7742,
-    detail:
-      'Approximate west-campus pin for demos — verify local distributions separately',
-  },
-]
-
-/** @type {Array<{ id: string; name: string; category: PantryCategoryId; image: string; tags: DietaryTag[] }>} */
-const pantryItemsRaw = [
-  {
-    id: '1',
-    name: 'Baby Spinach',
-    category: 'produce',
-    image:
-      'https://images.unsplash.com/photo-1580918174928-01ba62d50769?w=400&h=400&fit=crop',
-    tags: ['Vegan', 'GF'],
-  },
-  {
-    id: '2',
-    name: 'Carrots',
-    category: 'produce',
-    image:
-      'https://images.unsplash.com/photo-1445286459986-b585c93f053e?w=400&h=400&fit=crop',
-    tags: ['Vegan', 'GF'],
-  },
-  {
-    id: '3',
-    name: 'Bell Peppers',
-    category: 'produce',
-    image:
-      'https://images.unsplash.com/photo-1594282477452-270375ab922f?w=400&h=400&fit=crop',
-    tags: ['Vegan', 'GF'],
-  },
-  {
-    id: '4',
-    name: 'Whole Wheat Bread',
-    category: 'bakedGoods',
-    image:
-      'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=400&h=400&fit=crop',
-    tags: ['Vegan'],
-  },
-  {
-    id: '5',
-    name: 'Bagels',
-    category: 'bakedGoods',
-    image:
-      'https://images.unsplash.com/photo-1710529896510-e039ff2636ee?auto=format&fit=crop&w=800&h=800&q=85',
-    tags: ['Vegan'],
-  },
-  {
-    id: '6',
-    name: 'Muffins',
-    category: 'bakedGoods',
-    image:
-      'https://images.unsplash.com/photo-1607958996333-41aef7caef39?w=400&h=400&fit=crop',
-    tags: ['Halal'],
-  },
-  {
-    id: '7',
-    name: 'Apples',
-    category: 'fruits',
-    image:
-      'https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w=400&h=400&fit=crop',
-    tags: ['Vegan', 'GF'],
-  },
-  {
-    id: '8',
-    name: 'Bananas',
-    category: 'fruits',
-    image:
-      'https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?w=400&h=400&fit=crop',
-    tags: ['Vegan', 'GF'],
-  },
-  {
-    id: '9',
-    name: 'Oranges',
-    category: 'fruits',
-    image:
-      'https://images.unsplash.com/photo-1547514701-42782101795e?w=400&h=400&fit=crop',
-    tags: ['Vegan', 'GF'],
-  },
-  {
-    id: '10',
-    name: 'Canned Tuna',
-    category: 'protein',
-    image:
-      'https://images.unsplash.com/photo-1587734817258-8bc35cfdb31e?w=400&h=400&fit=crop',
-    tags: ['Halal', 'GF'],
-  },
-  {
-    id: '11',
-    name: 'Black Beans',
-    category: 'protein',
-    image:
-      'https://images.unsplash.com/photo-1564834728448-bdf60093cd01?w=400&h=400&fit=crop',
-    tags: ['Vegan', 'GF'],
-  },
-  {
-    id: '12',
-    name: 'Chicken Breast',
-    category: 'protein',
-    image:
-      'https://images.unsplash.com/photo-1604503468506-a8da13d82791?w=400&h=400&fit=crop',
-    tags: ['Halal', 'GF'],
-  },
-  {
-    id: '13',
-    name: 'Brown Rice',
-    category: 'grains',
-    image:
-      'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400&h=400&fit=crop',
-    tags: ['Vegan', 'GF'],
-  },
-  {
-    id: '14',
-    name: 'Oats',
-    category: 'grains',
-    image:
-      'https://images.unsplash.com/photo-1517684666006-6bd39e299814?w=400&h=400&fit=crop',
-    tags: ['Vegan', 'GF'],
-  },
-  {
-    id: '15',
-    name: 'Pasta',
-    category: 'grains',
-    image:
-      'https://images.unsplash.com/photo-1551462147-fba062f9e7ce?w=400&h=400&fit=crop',
-    tags: ['Vegan'],
-  },
-  {
-    id: '16',
-    name: 'Granola Bars',
-    category: 'snacks',
-    image:
-      'https://images.unsplash.com/photo-1494390248089-33d779a6cb01?w=400&h=400&fit=crop',
-    tags: ['GF'],
-  },
-  {
-    id: '17',
-    name: 'Trail Mix',
-    category: 'snacks',
-    image:
-      'https://images.unsplash.com/photo-1599599810769-bcde5a160d32?w=400&h=400&fit=crop',
-    tags: ['Vegan', 'GF'],
-  },
-  {
-    id: '18',
-    name: 'Crackers',
-    category: 'snacks',
-    image:
-      'https://images.unsplash.com/photo-1698158225819-2430cd5bfab5?auto=format&fit=crop&w=800&h=800&q=85',
-    tags: ['Vegan'],
-  },
-]
-
-const SITE_ROTATION = /** @type {const} */ (['mu', 'scc', 'west'])
-
-/** Items include `siteId` so the map can focus the right pantry when opened from a card. */
-export const pantryItems = pantryItemsRaw.map((item, i) => ({
-  ...item,
-  siteId: SITE_ROTATION[i % SITE_ROTATION.length],
-}))
-
-/** @param {PantrySiteId} siteId */
-export function getPantrySite(siteId) {
-  return pantrySites.find((s) => s.id === siteId)
+const pantryData = {
+  categories: [
+    'Produce',
+    'Fruits',
+    'Baked Goods/Snacks/Other',
+    'Meat',
+    'Dairy',
+    'Hygeine',
+    'Spreads/Canned Goods',
+    'Spices & Herbs',
+  ],
+  items: [
+    {
+      id: 1,
+      name: 'Brussel Sprouts',
+      category: 'Produce',
+      image: 'https://www.figma.com/api/mcp/asset/412ad7b0-7c45-4ebe-9b41-beaefefa2c8e',
+      tags: ['vegan'],
+      availableAt: [1, 2, 3],
+    },
+    {
+      id: 2,
+      name: 'Spinach',
+      category: 'Produce',
+      image: 'https://www.figma.com/api/mcp/asset/cab8ad9c-ac0c-4040-ac72-4fcb9cbbb442',
+      tags: ['vegan'],
+      availableAt: [1, 2, 3],
+    },
+    {
+      id: 3,
+      name: 'Corn',
+      category: 'Produce',
+      image: 'https://www.figma.com/api/mcp/asset/804568e8-c8e0-4cf7-bef0-02d3cf3c0b30',
+      tags: ['vegan'],
+      availableAt: [1, 2, 3],
+    },
+    {
+      id: 4,
+      name: 'Carrot',
+      category: 'Produce',
+      image: 'https://www.figma.com/api/mcp/asset/b375a51b-d8bc-446c-b771-72062cfa4471',
+      tags: ['vegan'],
+      availableAt: [1, 2, 3],
+    },
+    {
+      id: 5,
+      name: 'Cucumber',
+      category: 'Produce',
+      image: 'https://www.figma.com/api/mcp/asset/86693bdb-81ce-4af6-8eb0-f147e5f94d01',
+      tags: ['vegan'],
+      availableAt: [1, 2, 3],
+    },
+    {
+      id: 6,
+      name: 'Tomato',
+      category: 'Produce',
+      image: 'https://www.figma.com/api/mcp/asset/269ad400-daa0-4d28-9510-15dad672fb4f',
+      tags: ['vegan'],
+      availableAt: [1, 2, 3],
+    },
+    {
+      id: 7,
+      name: 'Onion',
+      category: 'Produce',
+      image: 'https://www.figma.com/api/mcp/asset/708626c6-5681-4181-a45a-accd891865c0',
+      tags: ['vegan'],
+      availableAt: [1, 2, 3],
+    },
+    {
+      id: 8,
+      name: 'Potato',
+      category: 'Produce',
+      image: 'https://www.figma.com/api/mcp/asset/f95048db-f836-4143-91ee-1dc8ba1cd94d',
+      tags: ['vegan'],
+      availableAt: [1, 2, 3],
+    },
+    {
+      id: 9,
+      name: 'Garlic',
+      category: 'Produce',
+      image: 'https://www.figma.com/api/mcp/asset/56ffe415-ca53-4046-bcee-f8fe9a946b59',
+      tags: ['vegan'],
+      availableAt: [1, 2, 3],
+    },
+    {
+      id: 10,
+      name: 'Jalapeno',
+      category: 'Produce',
+      image: 'https://www.figma.com/api/mcp/asset/af8af680-c3c8-464f-af41-6af591e2a880',
+      tags: ['vegan'],
+      availableAt: [1, 2, 3],
+    },
+    {
+      id: 11,
+      name: 'Tomatillo',
+      category: 'Produce',
+      image: 'https://www.figma.com/api/mcp/asset/ddcfd9a1-12f0-4c00-99e9-45113c1e7c39',
+      tags: ['vegan'],
+      availableAt: [1, 2, 3],
+    },
+    {
+      id: 12,
+      name: 'Banana',
+      category: 'Fruits',
+      image: 'https://www.figma.com/api/mcp/asset/f46523ae-e20c-4d5d-bea6-181b6842e38f',
+      tags: ['vegan', 'ready-to-eat'],
+      availableAt: [1, 2, 3],
+    },
+    {
+      id: 13,
+      name: 'Apple',
+      category: 'Fruits',
+      image: 'https://www.figma.com/api/mcp/asset/ad700f92-4961-4c3b-bc38-9923af8ebd0c',
+      tags: ['vegan', 'ready-to-eat'],
+      availableAt: [1, 2, 3],
+    },
+    {
+      id: 14,
+      name: 'Orange',
+      category: 'Fruits',
+      image: 'https://www.figma.com/api/mcp/asset/f4518b38-eda3-4e7f-9dca-444436ec99a0',
+      tags: ['vegan', 'ready-to-eat'],
+      availableAt: [1, 2, 3],
+    },
+    {
+      id: 15,
+      name: 'Pear',
+      category: 'Fruits',
+      image: 'https://www.figma.com/api/mcp/asset/47706021-b9f0-47a9-9c8f-5ba3ca9a9533',
+      tags: ['vegan'],
+      availableAt: [1, 2, 3],
+    },
+    {
+      id: 16,
+      name: 'Avocado',
+      category: 'Fruits',
+      image: 'https://www.figma.com/api/mcp/asset/49e8b91f-dcf1-4574-bdaf-5cbb7ceacad2',
+      tags: ['vegan'],
+      availableAt: [1, 2, 3],
+    },
+    {
+      id: 17,
+      name: 'Lemon',
+      category: 'Fruits',
+      image: 'https://www.figma.com/api/mcp/asset/118986b0-d81d-49ce-9876-d1489ab6ccd1',
+      tags: ['vegan'],
+      availableAt: [1, 2, 3],
+    },
+    {
+      id: 18,
+      name: 'Takis',
+      category: 'Baked Goods/Snacks/Other',
+      image: 'https://www.figma.com/api/mcp/asset/7124e9b2-b32b-4b9c-9fbe-1bb394edc970',
+      tags: ['ready-to-eat'],
+      availableAt: [1, 2, 3],
+    },
+    {
+      id: 19,
+      name: 'Bread',
+      category: 'Baked Goods/Snacks/Other',
+      image: 'https://www.figma.com/api/mcp/asset/76fbcf7e-4faa-4769-81f8-1244fd627196',
+      tags: ['ready-to-eat'],
+      availableAt: [1, 2, 3],
+    },
+    {
+      id: 20,
+      name: 'Twinkies',
+      category: 'Baked Goods/Snacks/Other',
+      image: 'https://www.figma.com/api/mcp/asset/0eee3b2a-78a7-42ae-888f-c9843badeb1a',
+      tags: ['ready-to-eat'],
+      availableAt: [1, 2, 3],
+    },
+    {
+      id: 21,
+      name: 'Cheetos',
+      category: 'Baked Goods/Snacks/Other',
+      image: 'https://www.figma.com/api/mcp/asset/e0f805ff-cd2d-4ec3-8d18-f0f9eb2fc3e8',
+      tags: ['ready-to-eat'],
+      availableAt: [1, 2, 3],
+    },
+    {
+      id: 22,
+      name: 'Chicken',
+      category: 'Meat',
+      image: 'https://www.figma.com/api/mcp/asset/c0bf1983-0957-45e4-bc88-95a706a238d1',
+      tags: ['protein'],
+      availableAt: [1, 2, 3],
+    },
+    {
+      id: 23,
+      name: 'Beef',
+      category: 'Meat',
+      image: 'https://www.figma.com/api/mcp/asset/2308dc69-6cc3-4722-83e2-75a6ee06e2cc',
+      tags: ['protein'],
+      availableAt: [1, 2, 3],
+    },
+    {
+      id: 24,
+      name: 'Tillapia',
+      category: 'Meat',
+      image: 'https://www.figma.com/api/mcp/asset/8537d111-3cc2-4e8c-a0f7-121cd384e0c9',
+      tags: ['protein'],
+      availableAt: [1, 2, 3],
+    },
+    {
+      id: 25,
+      name: 'Turkey',
+      category: 'Meat',
+      image: 'https://www.figma.com/api/mcp/asset/34b89a56-6d80-4b9a-a536-39491f12deae',
+      tags: ['protein'],
+      availableAt: [1, 2, 3],
+    },
+    {
+      id: 26,
+      name: 'Eggs',
+      category: 'Dairy',
+      image: 'https://www.figma.com/api/mcp/asset/b35b6a0a-b612-4f18-a476-b64c40dddb7f',
+      tags: [],
+      availableAt: [1, 2, 3],
+    },
+    {
+      id: 27,
+      name: 'Whole Milk',
+      category: 'Dairy',
+      image: 'https://www.figma.com/api/mcp/asset/fb4ce141-f818-4654-bff3-63dc23351f26',
+      tags: [],
+      availableAt: [1, 2, 3],
+    },
+    {
+      id: 28,
+      name: '1% Milk',
+      category: 'Dairy',
+      image: 'https://www.figma.com/api/mcp/asset/525e1904-8411-40b7-a610-bc287232daa9',
+      tags: [],
+      availableAt: [1, 2, 3],
+    },
+    {
+      id: 29,
+      name: '2% Milk',
+      category: 'Dairy',
+      image: 'https://www.figma.com/api/mcp/asset/640e5a82-b6e3-4dff-b638-b7ecc326b3e6',
+      tags: [],
+      availableAt: [1, 2, 3],
+    },
+    {
+      id: 30,
+      name: 'Soy Milk',
+      category: 'Dairy',
+      image: 'https://www.figma.com/api/mcp/asset/e43611a8-7f76-4acb-91b1-eba85733baf6',
+      tags: [],
+      availableAt: [1, 2, 3],
+    },
+    {
+      id: 31,
+      name: 'Almond Milk',
+      category: 'Dairy',
+      image: 'https://www.figma.com/api/mcp/asset/586e8d6a-ed21-4cb1-8d63-107529812f7e',
+      tags: [],
+      availableAt: [1, 2, 3],
+    },
+    {
+      id: 32,
+      name: 'Condoms',
+      category: 'Hygeine',
+      image: 'https://www.figma.com/api/mcp/asset/c5339338-ad07-43a7-a8fa-1d9894567bc6',
+      tags: [],
+      availableAt: [1, 2, 3],
+    },
+    {
+      id: 33,
+      name: 'Dental Dams',
+      category: 'Hygeine',
+      image: 'https://www.figma.com/api/mcp/asset/11db2a74-d70b-48ce-9f5b-8ff806b48949',
+      tags: [],
+      availableAt: [1, 2, 3],
+    },
+    {
+      id: 34,
+      name: 'Diapers',
+      category: 'Hygeine',
+      image: 'https://www.figma.com/api/mcp/asset/663c9beb-f5ed-4efb-b3f2-66f75a30c06b',
+      tags: [],
+      availableAt: [1, 2, 3],
+    },
+    {
+      id: 35,
+      name: 'Menstrual Cups/Discs',
+      category: 'Hygeine',
+      image: 'https://www.figma.com/api/mcp/asset/f42256f7-e0e5-40bf-a774-f0cfe5951db6',
+      tags: [],
+      availableAt: [1, 2, 3],
+    },
+    {
+      id: 36,
+      name: 'Pads',
+      category: 'Hygeine',
+      image: 'https://www.figma.com/api/mcp/asset/d912419a-4e86-4bbb-8d5d-6cb730e0649e',
+      tags: [],
+      availableAt: [1, 2, 3],
+    },
+    {
+      id: 37,
+      name: 'Tampons',
+      category: 'Hygeine',
+      image: 'https://www.figma.com/api/mcp/asset/b38fa6a1-5d7f-42a9-a058-03de4dafd30f',
+      tags: [],
+      availableAt: [1, 2, 3],
+    },
+    {
+      id: 38,
+      name: 'Peanut Butter',
+      category: 'Spreads/Canned Goods',
+      image: 'https://www.figma.com/api/mcp/asset/a1b50c79-c309-4b39-8e68-6326ba59fbd7',
+      tags: [],
+      availableAt: [1, 2, 3],
+    },
+    {
+      id: 39,
+      name: 'Strawberry Jam',
+      category: 'Spreads/Canned Goods',
+      image: 'https://www.figma.com/api/mcp/asset/ec027bf0-1fa1-4382-b73e-8073166febcb',
+      tags: ['ready-to-eat'],
+      availableAt: [1, 2, 3],
+    },
+    {
+      id: 40,
+      name: 'Canned Tuna',
+      category: 'Spreads/Canned Goods',
+      image: 'https://www.figma.com/api/mcp/asset/a23712c1-072b-4c43-8091-b81d4341a781',
+      tags: ['ready-to-eat'],
+      availableAt: [1, 2, 3],
+    },
+    {
+      id: 41,
+      name: 'Curry Powder',
+      category: 'Spices & Herbs',
+      image: 'https://www.figma.com/api/mcp/asset/4f52b3ae-acf0-4541-aa77-a08b1a8322d4',
+      tags: [],
+      availableAt: [1, 2, 3],
+    },
+    {
+      id: 42,
+      name: 'Sugar',
+      category: 'Spices & Herbs',
+      image: 'https://www.figma.com/api/mcp/asset/68cd1860-141e-49d5-9ad1-abef66b1fc21',
+      tags: [],
+      availableAt: [1, 2, 3],
+    },
+    {
+      id: 43,
+      name: 'Gochugaru',
+      category: 'Spices & Herbs',
+      image: 'https://www.figma.com/api/mcp/asset/ee094ab1-dfd7-4838-9004-782b8291437a',
+      tags: [],
+      availableAt: [1, 2, 3],
+    },
+    {
+      id: 44,
+      name: 'Garlic Powder',
+      category: 'Spices & Herbs',
+      image: 'https://www.figma.com/api/mcp/asset/37379dc1-fc6b-4c07-bc4b-53ad5d733bd4',
+      tags: [],
+      availableAt: [1, 2, 3],
+    },
+    {
+      id: 45,
+      name: 'Onion Powder',
+      category: 'Spices & Herbs',
+      image: 'https://www.figma.com/api/mcp/asset/5d5f6e11-400d-473a-bac7-cbbe56e6d5de',
+      tags: [],
+      availableAt: [1, 2, 3],
+    },
+  ],
+  pantries: [
+    {
+      id: 1,
+      name: 'ASUCD Pantry',
+      hours: 'Mon-Fri 10am-4pm',
+      status: 'well-stocked',
+      coordinates: { lat: 38.5382, lng: -121.7617 },
+      /** 0=Sun … 6=Sat; minutes from midnight [open, close) */
+      schedule: [{ days: [1, 2, 3, 4, 5], openMin: 10 * 60, closeMin: 16 * 60 }],
+    },
+    {
+      id: 2,
+      name: 'South Hall Food Closet',
+      hours: 'Mon-Wed 12pm-3pm',
+      status: 'limited',
+      coordinates: { lat: 38.539, lng: -121.76 },
+      schedule: [{ days: [1, 2, 3], openMin: 12 * 60, closeMin: 15 * 60 }],
+    },
+    {
+      id: 3,
+      name: 'Segundo Dining Commons',
+      hours: 'Daily 7am-9pm',
+      status: 'well-stocked',
+      coordinates: { lat: 38.5401, lng: -121.765 },
+      schedule: [{ days: [0, 1, 2, 3, 4, 5, 6], openMin: 7 * 60, closeMin: 21 * 60 }],
+    },
+  ],
 }
+
+export default pantryData
